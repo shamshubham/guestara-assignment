@@ -21,15 +21,11 @@ const categorySchema = new mongoose.Schema(
     },
     tax: {
       type: Number,
-      required: function () {
-        return this.taxApplicability;
-      },
+      required: false,
     },
     taxType: {
       type: String,
-      required: function () {
-        return this.taxApplicability;
-      },
+      required: false,
     },
   },
   {

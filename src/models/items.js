@@ -16,15 +16,11 @@ const itemSchema = new mongoose.Schema(
     },
     taxApplicability: {
       type: Boolean,
-      required: function () {
-        return this.taxApplicability;
-      },
+      required: false,
     },
     tax: {
       type: Number,
-      required: function () {
-        return this.taxApplicability;
-      },
+      required: false,
     },
     baseAmount: {
       type: Number,
@@ -36,10 +32,7 @@ const itemSchema = new mongoose.Schema(
     },
     totalAmount: {
       type: Number,
-      required: true,
-      default: function () {
-        return this.baseAmount - this.discount;
-      },
+      required: false,
     },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,

@@ -15,7 +15,7 @@ const sendErrorResponse = (res, error, message) => {
 };
 
 const sendNotFoundResponse = (res, message) => {
-  return res.status(404).json({
+  return res.status(403).json({
     success: false,
     message,
   });

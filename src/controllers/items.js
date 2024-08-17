@@ -8,83 +8,67 @@ const {
 } = require("../utils/responseHandler");
 
 const addItem = async (req, res) => {
-  const {
-    name,
-    image,
-    description,
-    taxApplicability,
-    tax,
-    baseAmount,
-    discount,
-    totalAmount,
-    categoryId,
-    subCategoryId,
-  } = req.body;
-
-  if (!req.file) {
-    return sendNotFoundResponse(res, "No file uploaded!");
-    // res.status(400).json({
-    //   success: false,
-    //   message: "No file uploaded!",
-    // });
-  } else {
-    req.body.imageUrl = `/uploads/${req.file.filename}`;
-  }
-
-  const category = await Category.findById(categoryId);
-  if (!category) {
-    return sendNotFoundResponse(res, "No Category Found!");
-    // res.status(404).json({
-    //   success: false,
-    //   message: "No Category Found!",
-    // });
-  }
-
-  if (subCategoryId) {
-    const subCategory = await SubCategory.findById(subCategoryId);
-    if (!subCategory) {
-      return sendErrorResponse(res, "No Sub Category found!");
-      // res.status(404).json({
-      //   success: false,
-      //   message: "No Sub Category found!",
-      // });
-    }
-  }
-
-  const item = new Item({
-    name: name,
-    image: req.body.imageUrl,
-    description: description,
-    taxApplicability: taxApplicability,
-    tax: tax,
-    baseAmount: baseAmount,
-    discount: discount,
-    totalAmount: totalAmount,
-    categoryId: categoryId,
-    subCategoryId: subCategoryId,
-  });
   try {
+    const {
+      name,
+      image,
+      description,
+      taxApplicability,
+      tax,
+      baseAmount,
+      discount,
+      categoryId,
+      subCategoryId,
+    } = req.body;
+
+    let { totalAmount } = req.body;
+
+    if (!req.file) {
+      return sendNotFoundResponse(res, "No file uploaded!");
+    }
+
+    const imageUrl = `/uploads/${req.file.filename}`;
+
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return sendNotFoundResponse(res, "No Category Found!");
+    }
+
+    if (subCategoryId) {
+      const subCategory = await SubCategory.findById(subCategoryId);
+      if (!subCategory) {
+        return sendErrorResponse(res, "No Sub Category found!");
+      }
+    }
+
+    if (!totalAmount) {
+      totalAmount = baseAmount - discount;
+    }
+
+    const item = new Item({
+      name,
+      image: req.body.imageUrl,
+      description,
+      taxApplicability,
+      tax,
+      baseAmount,
+      discount,
+      totalAmount,
+      categoryId,
+      subCategoryId,
+    });
     const newItem = await item.save();
-    return sendSuccessResponse(res, [newItem], "Item created successfully");
-    // res.status(200).json({
-    //   success: true,
-    //   data: [newItem],
-    //   message: "Item created successfully",
-    // });
+    return sendSuccessResponse(res, newItem, "Item created successfully");
   } catch (err) {
     return sendErrorResponse(res, err.message, err);
-    // res.status(400).json({
-    //   success: false,
-    //   message: err.message,
-    // });
   }
 };
 
 const getAllItem = async (req, res) => {
-  const { categoryId, subCategoryId, id, itemName } = req.query;
-
   try {
+    const { categoryId, subCategoryId, id, itemName } = req.query;
     let filters = {};
+
     if (categoryId) filters.categoryId = categoryId;
     if (subCategoryId) filters.subCategoryId = subCategoryId;
     if (id) filters._id = id;
@@ -94,47 +78,30 @@ const getAllItem = async (req, res) => {
 
     if (items.length === 0) {
       return sendNotFoundResponse(res, "No items found!");
-      // res.status(401).json({
-      //   success: false,
-      //   message: "No items found!",
-      // });
     }
     return sendSuccessResponse(res, [items], "Items fetched successfully");
-    // res.status(200).json({
-    //   success: true,
-    //   data: [items],
-    //   message: "Items fetched successfully",
-    // });
   } catch (err) {
     return sendErrorResponse(res, err.message, err);
-    // res.status(400).json({
-    //   success: false,
-    //   message: err.message,
-    // });
   }
 };
 
 const updateItem = async (req, res) => {
-  const itemId = req.params.id;
-  const {
-    name,
-    image,
-    description,
-    taxApplicability,
-    tax,
-    baseAmount,
-    discount,
-    totalAmount,
-  } = req.body;
-
   try {
+    const itemId = req.params.id;
+    const {
+      name,
+      image,
+      description,
+      taxApplicability,
+      tax,
+      baseAmount,
+      discount,
+      totalAmount,
+    } = req.body;
+
     const item = await Item.findById(itemId);
     if (!item) {
       return sendNotFoundResponse(err, "No items found!");
-      // res.status(401).json({
-      //   success: false,
-      //   message: "No items found!",
-      // });
     }
 
     if (req.file) {
@@ -152,17 +119,8 @@ const updateItem = async (req, res) => {
 
     const updatedItem = await item.save();
     return sendSuccessResponse(res, [updateItem], "Item updated successfully");
-    // res.status(200).json({
-    //   success: true,
-    //   data: [updatedItem],
-    //   message: "Item updated successfully",
-    // });
   } catch (err) {
     return sendErrorResponse(res, err.message, err);
-    // res.status(400).json({
-    //   success: false,
-    //   message: err.message,
-    // });
   }
 };
 
