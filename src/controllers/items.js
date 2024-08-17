@@ -1,6 +1,11 @@
 const Item = require("../models/items");
 const Category = require("../models/categories");
 const SubCategory = require("../models/subCategory");
+const {
+  sendSuccessResponse,
+  sendErrorResponse,
+  sendNotFoundResponse,
+} = require("../utils/responseHandler");
 
 const addItem = async (req, res) => {
   const {
@@ -17,29 +22,32 @@ const addItem = async (req, res) => {
   } = req.body;
 
   if (!req.file) {
-    return res.status(400).json({
-      success: false,
-      message: "No file uploaded!",
-    });
+    return sendNotFoundResponse(res, "No file uploaded!");
+    // res.status(400).json({
+    //   success: false,
+    //   message: "No file uploaded!",
+    // });
   } else {
     req.body.imageUrl = `/uploads/${req.file.filename}`;
   }
 
   const category = await Category.findById(categoryId);
   if (!category) {
-    return res.status(404).json({
-      success: false,
-      message: "No Category Found!",
-    });
+    return sendNotFoundResponse(res, "No Category Found!");
+    // res.status(404).json({
+    //   success: false,
+    //   message: "No Category Found!",
+    // });
   }
 
   if (subCategoryId) {
     const subCategory = await SubCategory.findById(subCategoryId);
     if (!subCategory) {
-      return res.status(404).json({
-        success: false,
-        message: "No Sub Category found!",
-      });
+      return sendErrorResponse(res, "No Sub Category found!");
+      // res.status(404).json({
+      //   success: false,
+      //   message: "No Sub Category found!",
+      // });
     }
   }
 
@@ -57,16 +65,18 @@ const addItem = async (req, res) => {
   });
   try {
     const newItem = await item.save();
-    return res.status(200).json({
-      success: true,
-      data: [newItem],
-      message: "Item created successfully",
-    });
+    return sendSuccessResponse(res, [newItem], "Item created successfully");
+    // res.status(200).json({
+    //   success: true,
+    //   data: [newItem],
+    //   message: "Item created successfully",
+    // });
   } catch (err) {
-    return res.status(400).json({
-      success: false,
-      message: err.message,
-    });
+    return sendErrorResponse(res, err.message, err);
+    // res.status(400).json({
+    //   success: false,
+    //   message: err.message,
+    // });
   }
 };
 
@@ -83,21 +93,24 @@ const getAllItem = async (req, res) => {
     const items = await Item.find(filters);
 
     if (items.length === 0) {
-      return res.status(401).json({
-        success: false,
-        message: "No items found!",
-      });
+      return sendNotFoundResponse(res, "No items found!");
+      // res.status(401).json({
+      //   success: false,
+      //   message: "No items found!",
+      // });
     }
-    return res.status(200).json({
-      success: true,
-      data: [items],
-      message: "Items fetched successfully",
-    });
+    return sendSuccessResponse(res, [items], "Items fetched successfully");
+    // res.status(200).json({
+    //   success: true,
+    //   data: [items],
+    //   message: "Items fetched successfully",
+    // });
   } catch (err) {
-    return res.status(400).json({
-      success: false,
-      message: err.message,
-    });
+    return sendErrorResponse(res, err.message, err);
+    // res.status(400).json({
+    //   success: false,
+    //   message: err.message,
+    // });
   }
 };
 
@@ -117,10 +130,11 @@ const updateItem = async (req, res) => {
   try {
     const item = await Item.findById(itemId);
     if (!item) {
-      return res.status(401).json({
-        success: false,
-        message: "No items found!",
-      });
+      return sendNotFoundResponse(err, "No items found!");
+      // res.status(401).json({
+      //   success: false,
+      //   message: "No items found!",
+      // });
     }
 
     if (req.file) {
@@ -137,16 +151,18 @@ const updateItem = async (req, res) => {
     item.totalAmount = totalAmount || item.totalAmount;
 
     const updatedItem = await item.save();
-    return res.status(200).json({
-      success: true,
-      data: [updatedItem],
-      message: "Item updated successfully",
-    });
+    return sendSuccessResponse(res, [updateItem], "Item updated successfully");
+    // res.status(200).json({
+    //   success: true,
+    //   data: [updatedItem],
+    //   message: "Item updated successfully",
+    // });
   } catch (err) {
-    return res.status(400).json({
-      success: false,
-      message: err.message,
-    });
+    return sendErrorResponse(res, err.message, err);
+    // res.status(400).json({
+    //   success: false,
+    //   message: err.message,
+    // });
   }
 };
 

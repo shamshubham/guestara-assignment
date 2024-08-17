@@ -5,6 +5,7 @@ const categorySchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      unique: true,
     },
     image: {
       type: String,
@@ -20,9 +21,15 @@ const categorySchema = new mongoose.Schema(
     },
     tax: {
       type: Number,
+      required: function () {
+        return this.taxApplicability;
+      },
     },
     taxType: {
       type: String,
+      required: function () {
+        return this.taxApplicability;
+      },
     },
   },
   {

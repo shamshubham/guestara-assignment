@@ -16,11 +16,15 @@ const itemSchema = new mongoose.Schema(
     },
     taxApplicability: {
       type: Boolean,
-      required: true,
+      required: function () {
+        return this.taxApplicability;
+      },
     },
     tax: {
       type: Number,
-      required: true,
+      required: function () {
+        return this.taxApplicability;
+      },
     },
     baseAmount: {
       type: Number,
@@ -33,6 +37,9 @@ const itemSchema = new mongoose.Schema(
     totalAmount: {
       type: Number,
       required: true,
+      default: function () {
+        return this.baseAmount - this.discount;
+      },
     },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -42,7 +49,7 @@ const itemSchema = new mongoose.Schema(
     subCategoryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "SubCategory",
-      required: false, // Optional, depending on whether the item is linked to a sub-category or not
+      required: false,
     },
   },
   { timestamps: true }

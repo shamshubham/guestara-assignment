@@ -5,6 +5,7 @@ const subCategorySchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      unique: true,
     },
     image: {
       type: String,
@@ -16,10 +17,15 @@ const subCategorySchema = new mongoose.Schema(
     },
     taxApplicability: {
       type: Boolean,
-      required: true,
+      default: function () {
+        return this.category ? this.category.taxApplicability : false;
+      },
     },
     tax: {
       type: Number,
+      default: function () {
+        return this.category ? this.category.tax : 0;
+      },
     },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
