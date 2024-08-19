@@ -11,7 +11,6 @@ const addItem = async (req, res) => {
   try {
     const {
       name,
-      image,
       description,
       taxApplicability,
       tax,
@@ -28,6 +27,7 @@ const addItem = async (req, res) => {
     }
 
     const imageUrl = `/uploads/${req.file.filename}`;
+    console.log(imageUrl);
 
     const category = await Category.findById(categoryId);
     if (!category) {
@@ -47,7 +47,7 @@ const addItem = async (req, res) => {
 
     const item = new Item({
       name,
-      image: req.body.imageUrl,
+      image: imageUrl,
       description,
       taxApplicability,
       tax,
@@ -118,7 +118,7 @@ const updateItem = async (req, res) => {
     item.totalAmount = totalAmount || item.totalAmount;
 
     const updatedItem = await item.save();
-    return sendSuccessResponse(res, [updateItem], "Item updated successfully");
+    return sendSuccessResponse(res, [updatedItem], "Item updated successfully");
   } catch (err) {
     return sendErrorResponse(res, err.message, err);
   }
