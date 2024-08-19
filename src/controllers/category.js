@@ -43,8 +43,9 @@ const addCategory = async (req, res) => {
 const getAllCategories = async (req, res) => {
   try {
     const filters = {};
-    const { id } = req.query;
+    const { id, name } = req.query;
     if (id) filters._id = id;
+    if (name) filters.name = name;
 
     const categories = await Category.find(filters);
     if (categories.length === 0) {

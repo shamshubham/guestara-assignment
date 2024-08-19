@@ -48,11 +48,12 @@ const addSubCategory = async (req, res) => {
 
 const getAllSubCategory = async (req, res) => {
   try {
-    const { categoryId, id } = req.query;
+    const { categoryId, id, name } = req.query;
     let filters = {};
 
     if (categoryId) filters.categoryId = categoryId;
     if (id) filters._id = id;
+    if (name) filters.name = name;
 
     const subCategories = await SubCategory.find(filters);
 
